@@ -11,23 +11,30 @@ import kotlin.io.path.div
 
 abstract class KDiffTask @Inject constructor(
     private val executable: String,
-    private val diffBranch: String
+    private val diffBranch: String,
+    private val remoteDirOverride: String
 ) :
     DefaultTask() {
 
     @TaskAction
     fun kDiff() {
-        val relBuildPath = project.properties["kpath"] as? String ?: "."
+        val kpath = project.properties["kpath"] as? String ?: "."
         val userDir = File(System.getProperty("user.dir"))
 
         // clone the git repo
-        val remoteRepo = cloneGitRepo(gitOriginUrl())
-        checkoutBranch(remoteRepo, diffBranch)
-        val branch1Output = execCmd(userDir, executable, "build", relBuildPath) { "" }
+        val remoteRepoDir = cloneGitRepo(gitOriginUrl())
+        checkoutBranch(remoteRepoDir, diffBranch)
+        val branch1Output = execCmd(userDir, executable, "build", kpath) { "" }
         val file1 = kotlin.io.path.createTempFile().toFile()
         with(file1) { writeText(branch1Output) }
 
-        val branch2Output = execCmd(remoteRepo, executable, "build", relBuildPath) { "" }
+        val remoteRepoExecDir = if (remoteDirOverride.isNotEmpty()) {
+            File(remoteRepoDir, remoteDirOverride)
+        } else {
+            remoteRepoDir
+        }
+
+        val branch2Output = execCmd(remoteRepoExecDir, executable, "build", kpath) { "" }
         val file2 = kotlin.io.path.createTempFile().toFile()
         with(file2) { writeText(branch2Output) }
 
@@ -59,8 +66,10 @@ abstract class KDiffTask @Inject constructor(
         return repoPath.toFile()
     }
 
-    private fun checkoutBranch(repoPath: File, branch: String): String =
+    private fun checkoutBranch(repoPath: File, branch: String) {
         execCmd(repoPath, "git", "checkout", branch)
+        execCmd(repoPath, "git", "pull", "origin", branch)
+    }
 
     private fun gitOriginUrl(): String = execCmd(project.rootDir, "git", "remote", "get-url", "origin")
 

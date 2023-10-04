@@ -12,7 +12,8 @@ class GradleKDiffPlugin: Plugin<Project> {
             action.plugin("de.undercouch.download")
         }
 
-        val diffBranch = project.properties["kdiff_branch"] as? String ?: "origin/master"
+        val diffBranch = project.properties["kbranch"] as? String ?: "master"
+        val remoteDirOverride = project.properties["kremotedir"] as? String ?: ""
 
         project.tasks.register("kDiffVersion") {
             it.doLast {
@@ -32,6 +33,6 @@ class GradleKDiffPlugin: Plugin<Project> {
         }
 
         val executable = project.layout.buildDirectory.file("kustomize").get().asFile.absolutePath ?: "kustomize"
-        project.tasks.register("kDiff", KDiffTask::class.java, executable, diffBranch)
+        project.tasks.register("kDiff", KDiffTask::class.java, executable, diffBranch, remoteDirOverride)
     }
 }
