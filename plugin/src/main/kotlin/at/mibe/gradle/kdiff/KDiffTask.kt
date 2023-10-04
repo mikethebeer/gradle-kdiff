@@ -24,9 +24,6 @@ abstract class KDiffTask @Inject constructor(
         // clone the git repo
         val remoteRepoDir = cloneGitRepo(gitOriginUrl())
         checkoutBranch(remoteRepoDir, diffBranch)
-        val branch1Output = execCmd(userDir, executable, "build", kpath) { "" }
-        val file1 = kotlin.io.path.createTempFile().toFile()
-        with(file1) { writeText(branch1Output) }
 
         val remoteRepoExecDir = if (remoteDirOverride.isNotEmpty()) {
             File(remoteRepoDir, remoteDirOverride)
@@ -34,7 +31,11 @@ abstract class KDiffTask @Inject constructor(
             remoteRepoDir
         }
 
-        val branch2Output = execCmd(remoteRepoExecDir, executable, "build", kpath) { "" }
+        val branch1Output = execCmd(remoteRepoExecDir, executable, "build", kpath) { "" }
+        val file1 = kotlin.io.path.createTempFile().toFile()
+        with(file1) { writeText(branch1Output) }
+
+        val branch2Output = execCmd(userDir, executable, "build", kpath) { "" }
         val file2 = kotlin.io.path.createTempFile().toFile()
         with(file2) { writeText(branch2Output) }
 
@@ -42,10 +43,9 @@ abstract class KDiffTask @Inject constructor(
             userDir,
             "/usr/bin/diff",
             "-y",
-            "--suppress-common-lines",
             "--color=always",
-            file2.absolutePath,
             file1.absolutePath,
+            file2.absolutePath,
             ignoreExit = true
         )
 
