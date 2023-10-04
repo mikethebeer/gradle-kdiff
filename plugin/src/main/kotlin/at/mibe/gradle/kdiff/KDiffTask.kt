@@ -32,27 +32,12 @@ abstract class KDiffTask @Inject constructor(
         }
 
         val branch1Output = execCmd(remoteRepoExecDir, executable, "build", kpath) { "" }
-        val file1 = kotlin.io.path.createTempFile().toFile()
-        with(file1) { writeText(branch1Output) }
-
         val branch2Output = execCmd(userDir, executable, "build", kpath) { "" }
-        val file2 = kotlin.io.path.createTempFile().toFile()
-        with(file2) { writeText(branch2Output) }
 
-        val stdout = execCmd(
-            userDir,
-            "/usr/bin/diff",
-            "-y",
-            "--color=always",
-            file1.absolutePath,
-            file2.absolutePath,
-            ignoreExit = true
-        )
+        val diffs = findTextDifferences(branch1Output, branch2Output)
+        val inlineDiff = generateInlineDiff(branch1Output, diffs, 5)
 
-        println(stdout)
-
-        file1.delete()
-        file2.delete()
+        println(inlineDiff)
     }
 
     private fun cloneGitRepo(originUrl: String): File {

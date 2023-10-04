@@ -15,11 +15,10 @@ repositories {
 
 dependencies {
     implementation("de.undercouch:gradle-download-task:5.5.0")
+    implementation("io.github.java-diff-utils:java-diff-utils:4.12")
 
     // Use the Kotlin JUnit 5 integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 gradlePlugin {
