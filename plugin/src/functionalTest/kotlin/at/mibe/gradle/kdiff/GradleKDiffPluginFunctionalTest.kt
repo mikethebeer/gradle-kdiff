@@ -27,7 +27,7 @@ class GradleKDiffPluginFunctionalTest {
         val runner = GradleRunner.create()
         runner.forwardOutput()
         runner.withPluginClasspath()
-        runner.withArguments("version")
+        runner.withArguments("kDiffVersion")
         runner.withProjectDir(projectDir)
         val result = runner.build()
 

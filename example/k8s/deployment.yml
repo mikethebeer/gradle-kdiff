@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kdiff
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kdiff
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kdiff
+    spec:
+      containers:
+        - name: kdiff
+          image: kdiff:latest
+          volumeMounts:
+            - name: diff
+              mountPath: /diff
+          env:
+            - name: DIFF_DIR
+              value: /diff
+      volumes:
+        - name: diff

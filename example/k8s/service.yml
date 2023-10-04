@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kdiff
+spec:
+  selector:
+    app.kubernetes.io/name: kdiff
+  ports:
+    - name: http
+      port: 8080

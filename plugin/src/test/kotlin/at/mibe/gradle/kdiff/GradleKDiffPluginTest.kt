@@ -11,6 +11,6 @@ class GradleKDiffPluginTest {
         project.plugins.apply("at.mibe.gradle.kdiff")
 
         // Verify the result
-        assertNotNull(project.tasks.findByName("version"))
+        assertNotNull(project.tasks.findByName("kDiffVersion"))
     }
 }

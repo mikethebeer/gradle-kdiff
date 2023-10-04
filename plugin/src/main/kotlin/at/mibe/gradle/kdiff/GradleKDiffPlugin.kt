@@ -14,7 +14,7 @@ class GradleKDiffPlugin: Plugin<Project> {
 
         val diffBranch = project.properties["kdiff_branch"] as? String ?: "origin/master"
 
-        project.tasks.register("version") {
+        project.tasks.register("kDiffVersion") {
             it.doLast {
                 println("GradleKDiffPlugin version: ${project.version}")
             }
