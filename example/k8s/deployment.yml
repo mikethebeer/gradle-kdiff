@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: kdiff
-          image: kdiff:latest
+          image: kdiff:dev
           volumeMounts:
             - name: diff
               mountPath: /diff
@@ -22,3 +22,4 @@ spec:
               value: /diff
       volumes:
         - name: diff
+          emptyDir: {}

@@ -5,16 +5,14 @@ import org.gradle.api.tasks.TaskAction
 import java.io.File
 import java.nio.file.Files
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlin.io.path.Path
 import kotlin.io.path.div
 
-abstract class KDiffTask @Inject constructor(
-    private val executable: String,
-    private val diffBranch: String,
-    private val remoteDirOverride: String
-) :
-    DefaultTask() {
+abstract class KDiffTask : DefaultTask() {
+
+    private val executable = project.layout.buildDirectory.file("kustomize").get().asFile.absolutePath ?: "kustomize"
+    private val diffBranch = project.properties["kbranch"] as? String ?: "master"
+    private val remoteDirOverride = project.properties["kremotedir"] as? String ?: ""
 
     @TaskAction
     fun kDiff() {
@@ -35,9 +33,12 @@ abstract class KDiffTask @Inject constructor(
         val branch2Output = execCmd(userDir, executable, "build", kpath) { "" }
 
         val diffs = findTextDifferences(branch1Output, branch2Output)
-        val inlineDiff = generateInlineDiff(branch1Output, diffs, 5)
-
-        println(inlineDiff)
+        if (diffs.deltas.isNotEmpty()) {
+            val inlineDiff = generateInlineDiff(branch1Output, diffs)
+            println(inlineDiff)
+        } else {
+            println("No differences found.")
+        }
     }
 
     private fun cloneGitRepo(originUrl: String): File {

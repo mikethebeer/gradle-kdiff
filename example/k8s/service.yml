@@ -6,5 +6,5 @@ spec:
   selector:
     app.kubernetes.io/name: kdiff
   ports:
-    - name: http
+    - name: mgmt
       port: 8080

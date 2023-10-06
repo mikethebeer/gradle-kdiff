@@ -10,19 +10,17 @@ fun findTextDifferences(text1: String, text2: String): Patch<String> {
     return DiffUtils.diff(text1Lines, text2Lines)
 }
 
-fun generateInlineDiff(text1: String, patch: Patch<String>, contextLines: Int): String {
+fun generateInlineDiff(text1: String, patch: Patch<String>): String {
     val lines1 = text1.lines()
     val highlightedLines = mutableListOf<String>()
 
-    for (delta in patch.deltas) {
-        // Calculate the start and end indices for the context lines
-        val startLine = maxOf(delta.source.position - contextLines, 0)
-        val endLine = minOf(delta.source.position + delta.source.size() + contextLines, lines1.size)
+    var currentLine = 0
 
-        // Add context lines before the diff
-        for (i in startLine until delta.source.position) {
-            val contextLine = lines1[i]
-            highlightedLines.add(" $contextLine") // Space indicates context lines
+    for (delta in patch.deltas) {
+        // Process lines before the diff
+        while (currentLine < delta.source.position) {
+            highlightedLines.add(lines1[currentLine])
+            currentLine++
         }
 
         // Process the deleted lines (red color)
@@ -37,13 +35,13 @@ fun generateInlineDiff(text1: String, patch: Patch<String>, contextLines: Int): 
             highlightedLines.add(insertedLine)
         }
 
-        // Add context lines after the diff
-        for (i in delta.source.position + delta.source.size() until endLine) {
-            val contextLine = lines1[i]
-            highlightedLines.add(" $contextLine") // Space indicates context lines
-        }
+        currentLine = delta.source.position + delta.source.size()
+    }
 
-        highlightedLines.add("=====================================")
+    // Add remaining lines after the last diff
+    while (currentLine < lines1.size) {
+        highlightedLines.add(lines1[currentLine])
+        currentLine++
     }
 
     return highlightedLines.joinToString("\n")
