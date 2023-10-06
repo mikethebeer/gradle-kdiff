@@ -1,4 +1,4 @@
-package at.mibe.gradle.kdiff
+package at.mibe.kdiff
 
 import com.github.difflib.DiffUtils
 import com.github.difflib.patch.Patch
@@ -31,7 +31,8 @@ fun generateInlineDiff(text1: String, patch: Patch<String>): String {
 
         // Process the inserted lines (green color)
         for (i in delta.target.position until delta.target.position + delta.target.size()) {
-            val insertedLine = "\u001B[32m+${delta.target.lines[i - delta.target.position]}\u001B[0m" // Green for insertions
+            val insertedLine =
+                "\u001B[32m+${delta.target.lines[i - delta.target.position]}\u001B[0m" // Green for insertions
             highlightedLines.add(insertedLine)
         }
 

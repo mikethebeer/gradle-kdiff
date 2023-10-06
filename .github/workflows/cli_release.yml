@@ -17,8 +17,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
-      - name: Setup and execute Gradle 'test' task
+      - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 8.3
@@ -28,4 +27,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: dev
           files: cli/build/distributions/*.zip
+
+permissions:
+  contents: write
