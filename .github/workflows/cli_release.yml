@@ -26,8 +26,8 @@ jobs:
         run: ./gradlew :cli:shadowDistZip
       - name: Release
         uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          tag_name: dev
           files: cli/build/distributions/*.zip
 
 permissions:
