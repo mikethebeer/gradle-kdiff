@@ -1,21 +1,16 @@
 plugins {
-    // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     `java-gradle-plugin`
-
-    // Apply the Kotlin JVM plugin to add support for Kotlin.
     kotlin("jvm") version "1.9.0"
     id("de.undercouch.download") version "5.5.0"
 }
 
 repositories {
-    // Use Maven Central for resolving dependencies.
     mavenCentral()
     gradlePluginPortal()
 }
 
 dependencies {
     implementation("de.undercouch:gradle-download-task:5.5.0")
-
     // Use the Kotlin JUnit 5 integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
@@ -25,6 +20,8 @@ gradlePlugin {
     val kDiff by plugins.creating {
         id = "at.mibe.gradle.kdiff"
         implementationClass = "at.mibe.gradle.kdiff.GradleKDiffPlugin"
+        version = rootProject.version
+        group = "at.mibe"
     }
 }
 
@@ -44,12 +41,19 @@ val functionalTest by tasks.registering(Test::class) {
 
 gradlePlugin.testSourceSets.add(functionalTestSourceSet)
 
+/**
+ * Task gets called during the build lifecycle that involves compiling and packaging the plugin.
+ * e.g. like running tasks like `build` or `assemble`. `processResources` will be automatically
+ * triggered as a dependency of these tasks.
+ */
+tasks.named<Copy>("processResources") {
+    expand("version" to version)
+}
+
 tasks.named<Task>("check") {
-    // Run the functional tests as part of `check`
     dependsOn(functionalTest)
 }
 
 tasks.named<Test>("test") {
-    // Use JUnit Jupiter for unit tests.
     useJUnitPlatform()
 }
