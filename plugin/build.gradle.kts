@@ -2,6 +2,7 @@ plugins {
     `java-gradle-plugin`
     kotlin("jvm") version "1.9.0"
     id("de.undercouch.download") version "5.5.0"
+    id("com.gradle.plugin-publish") version "1.2.1"
 }
 
 repositories {
@@ -16,12 +17,17 @@ dependencies {
 }
 
 gradlePlugin {
+    website = "https://github.com/mikethebeer/gradle-kdiff"
+    vcsUrl = "https://github.com/mikethebeer/gradle-kdiff"
     // Define the plugin
     val kDiff by plugins.creating {
-        id = "at.mibe.gradle.kdiff"
-        implementationClass = "at.mibe.gradle.kdiff.GradleKDiffPlugin"
+        id = "io.github.mikethebeer.gradle.kdiff"
+        implementationClass = "io.github.mikethebeer.gradle.kdiff.GradleKDiffPlugin"
         version = rootProject.version
-        group = "at.mibe"
+        group = "io.github.mikethebeer"
+        displayName = "Gradle KDiff Plugin"
+        description = "A plugin to download and install KDiff"
+        tags = listOf("kdiff", "kustomize", "diff", "plugin")
     }
 }
 

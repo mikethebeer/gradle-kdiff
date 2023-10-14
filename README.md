@@ -8,7 +8,7 @@ Apply the plugin to your Kustomize project in the `build.gradle.kts` file:
 
 ```kotlin
 plugins {
-    id("at.mibe.gradle.kdiff") version "0.1.0"
+    id("io.github.mikethebeer.gradle.kdiff") version "0.1.0"
 }
 ```
 

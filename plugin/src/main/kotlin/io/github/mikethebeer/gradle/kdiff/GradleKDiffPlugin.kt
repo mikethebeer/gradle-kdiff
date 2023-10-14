@@ -1,4 +1,4 @@
-package at.mibe.gradle.kdiff
+package io.github.mikethebeer.gradle.kdiff
 
 import de.undercouch.gradle.tasks.download.Download
 import org.gradle.api.Plugin

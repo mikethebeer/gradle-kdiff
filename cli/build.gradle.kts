@@ -24,5 +24,5 @@ dependencies {
 }
 
 application {
-    mainClass = "at.mibe.kdiff.ApplicationKt"
+    mainClass = "io.github.mikethebeer.kdiff.ApplicationKt"
 }

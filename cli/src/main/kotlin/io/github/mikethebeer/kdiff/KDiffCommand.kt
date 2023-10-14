@@ -1,4 +1,4 @@
-package at.mibe.kdiff
+package io.github.mikethebeer.kdiff
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument

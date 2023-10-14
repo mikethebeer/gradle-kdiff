@@ -1,4 +1,4 @@
-package at.mibe.gradle.kdiff
+package io.github.mikethebeer.gradle.kdiff
 
 import java.io.File
 import kotlin.test.assertTrue
@@ -19,7 +19,7 @@ class GradleKDiffPluginFunctionalTest {
         settingsFile.writeText("")
         buildFile.writeText("""
             plugins {
-                id("at.mibe.gradle.kdiff")
+                id("io.github.mikethebeer.gradle.kdiff")
             }
         """.trimIndent())
 

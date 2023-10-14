@@ -1,4 +1,4 @@
-package at.mibe.kdiff
+package io.github.mikethebeer.kdiff
 
 import com.github.difflib.DiffUtils
 import com.github.difflib.patch.Patch

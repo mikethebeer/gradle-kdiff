@@ -1,3 +1,3 @@
-package at.mibe.kdiff
+package io.github.mikethebeer.kdiff
 
 fun main(args: Array<String>) = KDiffCommand().main(args)

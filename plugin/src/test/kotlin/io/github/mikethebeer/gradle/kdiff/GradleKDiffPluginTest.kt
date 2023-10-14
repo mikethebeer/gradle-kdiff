@@ -1,4 +1,4 @@
-package at.mibe.gradle.kdiff
+package io.github.mikethebeer.gradle.kdiff
 
 import org.gradle.testfixtures.ProjectBuilder
 import kotlin.test.Test
@@ -8,7 +8,7 @@ class GradleKDiffPluginTest {
     @Test fun `plugin registers task`() {
         // Create a test project and apply the plugin
         val project = ProjectBuilder.builder().build()
-        project.plugins.apply("at.mibe.gradle.kdiff")
+        project.plugins.apply("io.github.mikethebeer.gradle.kdiff")
 
         // Verify the result
         assertNotNull(project.tasks.findByName("kDiffVersion"))
