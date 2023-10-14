@@ -27,7 +27,7 @@ gradlePlugin {
         group = "io.github.mikethebeer"
         displayName = "Gradle KDiff Plugin"
         description = "A plugin to download and install KDiff"
-        tags = listOf("kdiff", "kustomize", "diff", "plugin")
+        tags = listOf("kdiff", "kustomize", "diff")
     }
 }
 
