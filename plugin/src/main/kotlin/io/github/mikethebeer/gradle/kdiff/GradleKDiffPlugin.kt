@@ -67,7 +67,7 @@ class GradleKDiffPlugin : Plugin<Project> {
             val version = project.rootProject.version
 
             it.src("https://github.com/mikethebeer/gradle-kdiff/releases/download/$version/kdiff-$version.zip")
-            it.dest(project.layout.buildDirectory.file("kdiff.zip"))
+            it.dest(project.layout.buildDirectory.file("kdiff-$version.zip"))
             it.overwrite(false)
         }
 

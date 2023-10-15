@@ -20,39 +20,45 @@ class GradleKDiffPluginFunctionalTest {
         fun setupBuildFiles() {
             // Set up the default content for the test build
             settingsFile.writeText("")
-            buildFile.writeText("""
+            buildFile.writeText(
+                """
                 plugins {
                     id("io.github.mikethebeer.gradle.kdiff")
                 }
-            """.trimIndent())
+                project.version = "0.1.0"
+            """.trimIndent()
+            )
         }
+    }
+
+    private fun runTask(taskName: String): String {
+        val runner = GradleRunner.create()
+        runner.forwardOutput()
+        runner.withPluginClasspath()
+        runner.withArguments(taskName)
+        runner.withProjectDir(projectDir)
+        val result = runner.build()
+
+        return result.output
     }
 
     @Test
     fun `can run kDiffVersion task`() {
-        // Run the build
-        val runner = GradleRunner.create()
-        runner.forwardOutput()
-        runner.withPluginClasspath()
-        runner.withArguments("kDiffVersion")
-        runner.withProjectDir(projectDir)
-        val result = runner.build()
-
-        // Verify the result
-        assertTrue(result.output.contains("GradleKDiffPlugin version: unspecified"))
+        val output = runTask("kDiffVersion")
+        assertTrue(output.contains("GradleKDiffPlugin version: unspecified"))
     }
 
     @Test
     fun `can download and install Kustomize`() {
-        // Run the build
-        val runner = GradleRunner.create()
-        runner.forwardOutput()
-        runner.withPluginClasspath()
-        runner.withArguments("installKustomize")
-        runner.withProjectDir(projectDir)
-        val result = runner.build()
-
+        runTask("installKustomize")
         assertTrue(projectDir.resolve("build/bin/install_kustomize.sh").exists())
         assertTrue(projectDir.resolve("build/bin/kustomize").exists())
+    }
+
+    @Test
+    fun `can download and install KDiff`() {
+        runTask("installKdiff")
+        assertTrue(projectDir.resolve("build/bin/kdiff").exists())
+        assertTrue(projectDir.resolve("build/kdiff-0.1.0.zip").exists())
     }
 }
