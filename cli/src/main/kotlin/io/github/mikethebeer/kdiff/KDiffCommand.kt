@@ -8,10 +8,11 @@ import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.path
+import com.github.syari.kgit.KGit
+import org.eclipse.jgit.lib.TextProgressMonitor
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
 import kotlin.io.path.div
 import kotlin.io.path.pathString
@@ -26,14 +27,25 @@ class KDiffCommand : CliktCommand(name = "kdiff") {
         .default(File("kustomize"))
 
     override fun run() {
+        val repoPath = ensureGitRepoCheckoutDirExists()
         // clone the git repo
-        val remoteRepoDir = cloneGitRepo(gitOriginUrl(), Path("/tmp/kdiff"))
-        checkoutBranch(remoteRepoDir, remoteBranch)
+        val git = KGit.cloneRepository {
+            setURI(gitOriginUrl)
+            setTimeout(60)
+            setProgressMonitor(TextProgressMonitor())
+            setDirectory(repoPath.toFile())
+        }
+        git.checkout {
+            setName(remoteBranch)
+            setProgressMonitor(TextProgressMonitor())
+            setForced(true)
+        }
+
 
         val remoteRepoExecDir = if (remoteDirOverride.isNotEmpty()) {
-            remoteRepoDir / remoteDirOverride
+            repoPath / remoteDirOverride
         } else {
-            remoteRepoDir
+            repoPath
         }
 
         // run kustomize on the cloned remote branch
@@ -47,56 +59,20 @@ class KDiffCommand : CliktCommand(name = "kdiff") {
         val diffs = findTextDifferences(branch1Output, branch2Output)
         if (diffs.deltas.isNotEmpty()) {
             val inlineDiff = generateInlineDiff(branch1Output, diffs)
-            println(inlineDiff)
+            echo(inlineDiff)
         } else {
-            println("No differences found.")
+            echo("No differences found.")
         }
     }
 
-    private fun cloneGitRepo(originUrl: String, dest: Path): Path {
-        // Store target directory into a variable to avoid project reference in the configuration cache
-        val repoPath = dest / Path(originUrl)
+    private fun ensureGitRepoCheckoutDirExists(): Path {
+        val tempPath = Path("/tmp/kdiff")
+        val repoPath = tempPath / Path(gitOriginUrl)
         Files.createDirectories(repoPath)
-
-        execCmd("git", "clone", originUrl, ".", dir = repoPath.toFile()) { "Git clone failed" }
         return repoPath
     }
 
-    private fun checkoutBranch(repoPath: Path, branch: String) {
-        execCmd("git", "checkout", branch, dir = repoPath.toFile())
-        execCmd("git", "pull", "origin", branch, dir = repoPath.toFile())
-    }
-
-    private fun gitOriginUrl(): String = execCmd("git", "remote", "get-url", "origin")
-
-    private fun execCmd(
-        vararg args: String,
-        dir: File? = null,
-        onError: ((String) -> String)? = null
-    ): String {
-        val cmd = args.toList()
-        val stdoutFile = kotlin.io.path.createTempFile().toFile()
-        val stderrFile = kotlin.io.path.createTempFile().toFile()
-
-        try {
-            val proc = ProcessBuilder(cmd)
-                .directory(dir)
-                .redirectOutput(stdoutFile)
-                .redirectError(stderrFile)
-                .start()
-            proc.waitFor(10, TimeUnit.SECONDS)
-            val stdout = stdoutFile.readText().trim()
-            val stderr = stderrFile.readText().trim()
-            return if (proc.exitValue() == 0) {
-                stdout
-            } else {
-                onError?.invoke(stderr) ?: throw RuntimeException(
-                    "command failed: ${cmd.joinToString(" ")}\n$stderr"
-                )
-            }
-        } finally {
-            stderrFile.delete()
-            stdoutFile.delete()
-        }
+    private val gitOriginUrl: String by lazy {
+        execCmd("git", "remote", "get-url", "origin")
     }
 }
