@@ -1,6 +1,6 @@
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.20"
     id("de.undercouch.download") version "5.5.0"
     id("com.gradle.plugin-publish") version "1.2.1"
 }
